@@ -1,16 +1,16 @@
 {
-  "domain": "ble_yc01",
-  "name": "ble_yc01",
+  "domain": "ble_c600",
+  "name": "ble_c600",
   "bluetooth": [
     {
-      "local_name": "BLE-YC01*"
+      "local_name": "BLE-C600*"
     }
   ],
   "codeowners": ["@jdeath"],	
   "config_flow": true,
   "dependencies": ["bluetooth_adapters"],
-  "documentation": "https://www.github.com/jdeath/BLE-YC01",
+  "documentation": "https://www.github.com/jdeath/BLE-C600",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/jdeath/BLE-YC01/issues",
+  "issue_tracker": "https://github.com/jdeath/BLE-C600/issues",
   "version": "1.0"
 }

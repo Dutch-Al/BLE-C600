@@ -1,10 +1,10 @@
-"""The YC01 BLE integration."""
+"""The C600 BLE integration."""
 from __future__ import annotations
 
 from datetime import timedelta
 import logging
 
-from .BLE_YC01 import YC01BluetoothDeviceData
+from .BLE_C600 import C600BluetoothDeviceData
 
 from homeassistant.components import bluetooth
 from homeassistant.config_entries import ConfigEntry
@@ -22,7 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up YC01 BLE device from a config entry."""
+    """Set up C600 BLE device from a config entry."""
     hass.data.setdefault(DOMAIN, {})
     address = entry.unique_id
 
@@ -33,15 +33,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     ble_device = bluetooth.async_ble_device_from_address(hass, address)
 
     if not ble_device:
-        raise ConfigEntryNotReady(f"Could not find YC01 device with address {address}")
+        raise ConfigEntryNotReady(f"Could not find C600 device with address {address}")
 
     async def _async_update_method():
-        """Get data from YC01 BLE."""
+        """Get data from C600 BLE."""
         ble_device = bluetooth.async_ble_device_from_address(hass, address)
-        yc01 = YC01BluetoothDeviceData(_LOGGER)
+        c600 = C600BluetoothDeviceData(_LOGGER)
 
         try:
-            data = await yc01.update_device(ble_device)
+            data = await c600.update_device(ble_device)
         except Exception as err:
             raise UpdateFailed(f"Unable to fetch data: {err}") from err
 

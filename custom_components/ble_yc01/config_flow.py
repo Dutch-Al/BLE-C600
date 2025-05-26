@@ -1,4 +1,4 @@
-"""Config flow for YC01 BlE integration."""
+"""Config flow for C600 BlE integration."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import dataclasses
 import logging
 from typing import Any
 
-from .BLE_YC01 import YC01BluetoothDeviceData, YC01Device
+from .BLE_C600 import C600BluetoothDeviceData, C600Device
 from bleak import BleakError
 import voluptuous as vol
 
@@ -30,21 +30,21 @@ class Discovery:
 
     name: str
     discovery_info: BluetoothServiceInfo
-    device: YC01Device
+    device: C600Device
 
 
-def get_name(device: YC01Device) -> str:
+def get_name(device: C600Device) -> str:
     """Generate name with identifier for device."""
 
     return f"{device.name}"
 
 
-class YC01DeviceUpdateError(Exception):
+class C600DeviceUpdateError(Exception):
     """Custom error class for device updates."""
 
 
-class YC01ConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for YC01 BLE."""
+class C600ConfigFlow(ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for C600 BLE."""
 
     VERSION = 1
 
@@ -55,21 +55,21 @@ class YC01ConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def _get_device_data(
         self, discovery_info: BluetoothServiceInfo
-    ) -> YC01Device:
+    ) -> C600Device:
         ble_device = bluetooth.async_ble_device_from_address(
             self.hass, discovery_info.address
         )
         _LOGGER.debug("in _get_device_data")
         if ble_device is None:
             _LOGGER.debug("no ble_device in _get_device_data")
-            raise YC01DeviceUpdateError("No ble_device")
+            raise C600DeviceUpdateError("No ble_device")
         
         _LOGGER.debug("Getting Device")
-        yc01 = YC01BluetoothDeviceData(_LOGGER)
+        c600 = C600BluetoothDeviceData(_LOGGER)
         _LOGGER.debug("Got Device Device")
         try:
             _LOGGER.debug("Try Update")
-            data = await yc01.update_device(ble_device)
+            data = await c600.update_device(ble_device)
             _LOGGER.debug("Got Data")
             #data.name = discovery_info.advertisement.local_name
             data.name = discovery_info.address
@@ -81,7 +81,7 @@ class YC01ConfigFlow(ConfigFlow, domain=DOMAIN):
                 discovery_info.address,
                 err,
             )
-            raise YC01DeviceUpdateError("Failed getting device data") from err
+            raise C600DeviceUpdateError("Failed getting device data") from err
         except Exception as err:
             _LOGGER.error(
                 "Unknown error occurred from %s: %s", discovery_info.address, err
@@ -99,7 +99,7 @@ class YC01ConfigFlow(ConfigFlow, domain=DOMAIN):
 
         try:
             device = await self._get_device_data(discovery_info)
-        except YC01DeviceUpdateError:
+        except C600DeviceUpdateError:
             return self.async_abort(reason="cannot_connect")
         except Exception:  # pylint: disable=broad-except
             return self.async_abort(reason="unknown")
@@ -155,25 +155,25 @@ class YC01ConfigFlow(ConfigFlow, domain=DOMAIN):
                 continue
 
             if not (
-                discovery_info.advertisement.local_name.startswith("BLE-YC01")
+                discovery_info.advertisement.local_name.startswith("BLE-C600")
             ):
                 continue
 
             _LOGGER.debug("Found My Device")
-            _LOGGER.debug("YC01 Discovery address: %s", address)
-            _LOGGER.debug("YC01 Man Data: %s", discovery_info.manufacturer_data)
-            _LOGGER.debug("YC01 advertisement: %s", discovery_info.advertisement)
-            _LOGGER.debug("YC01 device: %s", discovery_info.device)
-            _LOGGER.debug("YC01 service data: %s", discovery_info.service_data)
-            _LOGGER.debug("YC01 service uuids: %s", discovery_info.service_uuids)
-            _LOGGER.debug("YC01 rssi: %s", discovery_info.rssi)
+            _LOGGER.debug("C600 Discovery address: %s", address)
+            _LOGGER.debug("C600 Man Data: %s", discovery_info.manufacturer_data)
+            _LOGGER.debug("C600 advertisement: %s", discovery_info.advertisement)
+            _LOGGER.debug("C600 device: %s", discovery_info.device)
+            _LOGGER.debug("C600 service data: %s", discovery_info.service_data)
+            _LOGGER.debug("C600 service uuids: %s", discovery_info.service_uuids)
+            _LOGGER.debug("C600 rssi: %s", discovery_info.rssi)
             _LOGGER.debug(
-                "YC01 advertisement: %s", discovery_info.advertisement.local_name
+                "C600 advertisement: %s", discovery_info.advertisement.local_name
             )
             try:
                 device = await self._get_device_data(discovery_info)
                 _LOGGER.debug("Getting Device Data")
-            except YC01DeviceUpdateError:
+            except C600DeviceUpdateError:
                 _LOGGER.debug("Cannot Connect")
                 return self.async_abort(reason="cannot_connect")
             except Exception:  # pylint: disable=broad-except

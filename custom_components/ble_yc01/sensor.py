@@ -1,9 +1,9 @@
-"""Support for YC01 ble sensors."""
+"""Support for C600 ble sensors."""
 from __future__ import annotations
 
 import logging
 
-from .BLE_YC01 import YC01Device
+from .BLE_C600 import C600Device
 
 from homeassistant import config_entries
 from homeassistant.components.sensor import (
@@ -101,10 +101,10 @@ async def async_setup_entry(
     entry: config_entries.ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the YC01 BLE sensors."""
+    """Set up the C600 BLE sensors."""
     is_metric = hass.config.units is METRIC_SYSTEM
 
-    coordinator: DataUpdateCoordinator[YC01Device] = hass.data[DOMAIN][entry.entry_id]
+    coordinator: DataUpdateCoordinator[C600Device] = hass.data[DOMAIN][entry.entry_id]
     sensors_mapping = SENSORS_MAPPING_TEMPLATE.copy()
     entities = []
     _LOGGER.debug("got sensors: %s", coordinator.data.sensors)
@@ -117,14 +117,14 @@ async def async_setup_entry(
             )
             continue
         entities.append(
-            YC01Sensor(coordinator, coordinator.data, sensors_mapping[sensor_type])
+            C600Sensor(coordinator, coordinator.data, sensors_mapping[sensor_type])
         )
 
     async_add_entities(entities)
 
 
-class YC01Sensor(CoordinatorEntity[DataUpdateCoordinator[YC01Device]], SensorEntity):
-    """YC01 BLE sensors for the device."""
+class C600Sensor(CoordinatorEntity[DataUpdateCoordinator[C600Device]], SensorEntity):
+    """C600 BLE sensors for the device."""
 
     #_attr_state_class = SensorStateClass.MEASUREMENT
     _attr_has_entity_name = True
@@ -132,30 +132,30 @@ class YC01Sensor(CoordinatorEntity[DataUpdateCoordinator[YC01Device]], SensorEnt
     def __init__(
         self,
         coordinator: DataUpdateCoordinator,
-        YC01_device: YC01Device,
+        C600_device: C600Device,
         entity_description: SensorEntityDescription,
     ) -> None:
-        """Populate the YC01 entity with relevant data."""
+        """Populate the C600 entity with relevant data."""
         super().__init__(coordinator)
         self.entity_description = entity_description
 
-        name = f"{YC01_device.name} {YC01_device.identifier}"
+        name = f"{C600_device.name} {C600_device.identifier}"
 
         self._attr_unique_id = f"{name}_{entity_description.key}"
 
-        self._id = YC01_device.address
+        self._id = C600_device.address
         self._attr_device_info = DeviceInfo(
             connections={
                 (
                     CONNECTION_BLUETOOTH,
-                    YC01_device.address,
+                    C600_device.address,
                 )
             },
             name=name,
-            manufacturer="YC01",
-            model="YC01",
-            hw_version=YC01_device.hw_version,
-            sw_version=YC01_device.sw_version,
+            manufacturer="C600",
+            model="C600",
+            hw_version=C600_device.hw_version,
+            sw_version=C600_device.sw_version,
         )
 
     @property

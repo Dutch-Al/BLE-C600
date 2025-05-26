@@ -1,5 +1,5 @@
-"""Constants for YC01 BLE."""
+"""Constants for C600 BLE."""
 
-DOMAIN = "ble_yc01"
+DOMAIN = "ble_c600"
 
 DEFAULT_SCAN_INTERVAL = 1800

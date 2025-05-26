@@ -1,4 +1,4 @@
-"""Parser for YC01 BLE devices"""
+"""Parser for C600 BLE devices"""
 
 from __future__ import annotations
 
@@ -28,8 +28,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass
-class YC01Device:
-    """Response data with information about the YC01 device"""
+class C600Device:
+    """Response data with information about the C600 device"""
 
     hw_version: str = ""
     sw_version: str = ""
@@ -42,8 +42,8 @@ class YC01Device:
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-branches
-class YC01BluetoothDeviceData:
-    """Data for YC01 BLE sensors."""
+class C600BluetoothDeviceData:
+    """Data for C600 BLE sensors."""
 
     _event: asyncio.Event | None
     _command_data: bytearray | None
@@ -76,7 +76,7 @@ class YC01BluetoothDeviceData:
     def decode_position(self,decodedData,idx):
         return int.from_bytes(decodedData[idx:idx+2], byteorder="big", signed=True)
         
-    async def _get_status(self, client: BleakClient, device: YC01Device) -> YC01Device:
+    async def _get_status(self, client: BleakClient, device: C600Device) -> C600Device:
         
         _LOGGER.debug("Getting Status")
         data = await client.read_gatt_char(READ_UUID)
@@ -90,13 +90,13 @@ class YC01BluetoothDeviceData:
         # ec = ((message[5]<<8) + message[6]);
         # tds = ((message[7]<<8) + message[8]);
         # cloro = ((message[11]<<8) + message[12]);
-        # id(ble_yc01_temperature_sensor).publish_state(temp/10.0);
-        # id(ble_yc01_ph_sensor).publish_state(ph/100.0);
-        # id(ble_yc01_orp_sensor).publish_state(orp);
-        # id(ble_yc01_battery).publish_state(battery/31.9);
-        # id(ble_yc01_ec_sensor).publish_state(ec);
-        # id(ble_yc01_tds_sensor).publish_state(tds);
-        # id(ble_yc01_cloro).publish_state(cloro/10.0)
+        # id(ble_c600_temperature_sensor).publish_state(temp/10.0);
+        # id(ble_c600_ph_sensor).publish_state(ph/100.0);
+        # id(ble_c600_orp_sensor).publish_state(orp);
+        # id(ble_c600_battery).publish_state(battery/31.9);
+        # id(ble_c600_ec_sensor).publish_state(ec);
+        # id(ble_c600_tds_sensor).publish_state(tds);
+        # id(ble_c600_cloro).publish_state(cloro/10.0)
         
         constant = decodedData[1]
         product_name_code = decodedData[2]
@@ -133,13 +133,13 @@ class YC01BluetoothDeviceData:
         return device
 
     
-    async def update_device(self, ble_device: BLEDevice) -> YC01Device:
+    async def update_device(self, ble_device: BLEDevice) -> C600Device:
         """Connects to the device through BLE and retrieves relevant data"""
         _LOGGER.debug("Update Device")
         client = await establish_connection(BleakClient, ble_device, ble_device.address)
         _LOGGER.debug("Got Client")
         #await client.pair()
-        device = YC01Device()
+        device = C600Device()
         _LOGGER.debug("Made Device")
         
         device = await self._get_status(client, device)
