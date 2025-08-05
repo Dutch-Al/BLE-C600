@@ -81,7 +81,11 @@ class C600BluetoothDeviceData:
         _LOGGER.debug("Getting Status")
         data = await client.read_gatt_char(READ_UUID)
         decodedData = self.decode(data)
-        
+
+	for i in range(0, len(decodedData) - 1):
+		val = self.decode_position(decodedData, i)
+		_LOGGER.debug("Pos %d-%d: %d", i, i+1, val)
+
         
         # temp = ((message[13]<<8) + message[14]);
         # ph = ((message[3]<<8) + message[4]);
