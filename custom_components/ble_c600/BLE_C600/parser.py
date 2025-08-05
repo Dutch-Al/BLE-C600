@@ -77,15 +77,19 @@ class C600BluetoothDeviceData:
         return int.from_bytes(decodedData[idx:idx+2], byteorder="big", signed=True)
         
     async def _get_status(self, client: BleakClient, device: C600Device) -> C600Device:
-        
         _LOGGER.debug("Getting Status")
         data = await client.read_gatt_char(READ_UUID)
+        _LOGGER.debug("Raw BLE bytes: %s", [hex(b) for b in data])  # Optional but helpful
+
         decodedData = self.decode(data)
+        _LOGGER.debug("Decoded BLE data: %s", decodedData)
 
-	for i in range(0, len(decodedData) - 1):
-		val = self.decode_position(decodedData, i)
-		_LOGGER.debug("Pos %d-%d: %d", i, i+1, val)
-
+        for i in range(0, len(decodedData) - 1):  # Prevent out-of-bounds
+            try:
+                val = self.decode_position(decodedData, i)
+                _LOGGER.debug("Pos %02d-%02d: %6d (0x%04X)", i, i + 1, val, val & 0xFFFF)
+            except Exception as e:
+                _LOGGER.debug("Pos %02d-%02d: decode failed (%s)", i, i + 1, e)
         
         # temp = ((message[13]<<8) + message[14]);
         # ph = ((message[3]<<8) + message[4]);
